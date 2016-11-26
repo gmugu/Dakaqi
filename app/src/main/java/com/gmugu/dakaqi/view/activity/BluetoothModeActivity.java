@@ -89,7 +89,6 @@ public class BluetoothModeActivity extends AppCompatActivity implements IView {
         // 打开接收线程
         new Thread("get data") {
 
-
             @Override
             public void run() {
                 String getStr;
