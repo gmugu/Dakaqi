@@ -5,11 +5,11 @@ package com.gmugu.dakaqi.view;
  */
 
 public interface IView {
-    void showCurUserInfo(String runnerName);
+    void showCurUserInfo(String cardMac);
 
     void showMakeErrorMsg(String msg);
 
-    void showMakeSuccessMsg(String msg);
+    void showUploadSize(int size);
 
     int getPointId();
 }

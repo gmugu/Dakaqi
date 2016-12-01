@@ -1,12 +1,10 @@
 package com.gmugu.dakaqi.data;
 
+import com.gmugu.dakaqi.model.GameInfoResult;
 import com.gmugu.dakaqi.model.MarkResult;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 /**
@@ -16,6 +14,15 @@ import retrofit2.http.Query;
 public interface IApiService {
 
     /**
+     * 初始化比赛数据
+     *
+     * @param password 密码
+     * @return
+     */
+    @GET("initGame")
+    Call<GameInfoResult> initGame(@Query("password") String password);
+
+    /**
      * 上传每次打卡的数据
      *
      * @param data
@@ -23,5 +30,4 @@ public interface IApiService {
      */
     @GET("runner")
     Call<MarkResult> mark(@Query("data") String data);
-
 }

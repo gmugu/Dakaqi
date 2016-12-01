@@ -8,6 +8,7 @@ import com.gmugu.dakaqi.model.MarkRequest;
 import com.gmugu.dakaqi.model.MarkResult;
 import com.gmugu.dakaqi.presenter.ILogicPresenter;
 import com.gmugu.dakaqi.util.MD5Util;
+import com.gmugu.dakaqi.util.QueueBuffer;
 import com.gmugu.dakaqi.view.IView;
 import com.google.gson.Gson;
 
@@ -26,15 +27,33 @@ public class LogicPresenterImpl implements ILogicPresenter {
     private static final String TAG = LogicPresenterImpl.class.getSimpleName();
     private IView view;
     private IApiService apiService = ApiService.getApiService();
-    private HashMap<String, Long> macMap = new HashMap<String, Long>();
+    private HashMap<String, Long> macMap = new HashMap<>();
 
-    public LogicPresenterImpl(IView view) {
+    private QueueBuffer<String> queueOfWaitForUpload = new QueueBuffer();
 
+    public LogicPresenterImpl(final IView view) {
         this.view = view;
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    String rawJson = queueOfWaitForUpload.pop();
+                    Log.d(TAG, "正在重发");
+                    String enJson = rawJson;
+                    Call<MarkResult> mark = apiService.mark(enJson);
+                    mark.enqueue(new MyCallback(rawJson, enJson));
+                    try {
+                        sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override
-    public void onReceive(String MAC, String tag) {
+    public synchronized void onReceive(String MAC, String tag) {
         if (macMap.containsKey(MAC)) {
             if (System.currentTimeMillis() - macMap.get(MAC) <= 30 * 1000) {
                 Log.d(TAG, "onReceive: ignore:" + MAC + "  tag:" + tag);
@@ -44,17 +63,17 @@ public class LogicPresenterImpl implements ILogicPresenter {
         Log.d(TAG, "onReceive: " + MAC + "  tag:" + tag);
         macMap.put(MAC, System.currentTimeMillis());
 
-
+        view.showCurUserInfo(MAC);
+        view.showUploadSize(queueOfWaitForUpload.getBufferSize());
         MarkRequest request = new MarkRequest();
         request.setRunnerNo(MAC);
         request.setCurTime(System.currentTimeMillis());
         request.setPointId(Integer.parseInt(tag));
-        final String rawJson = new Gson().toJson(request);
+        String rawJson = new Gson().toJson(request);
         // TODO: 16/11/25
-        final String enJson = rawJson;
+        String enJson = rawJson;
         Call<MarkResult> mark = apiService.mark(enJson);
         mark.enqueue(new MyCallback(rawJson, enJson));
-
     }
 
     private class MyCallback implements Callback<MarkResult> {
@@ -77,23 +96,20 @@ public class LogicPresenterImpl implements ILogicPresenter {
                 if (!result.getCheckSum().equals(MD5Util.md5ToHexStr(rawJson))) {
                     throw new Exception("校验码错误");
                 }
-                String runnerName = result.getRunnerName();
-                view.showMakeSuccessMsg(runnerName);
+
             } catch (Exception e) {
-                view.showMakeErrorMsg(e.getMessage() + ",正在重发!");
-//                Call<MarkResult> mark = apiService.mark(enJson);
-//                mark.enqueue(new MyCallback(rawJson, enJson));
+                queueOfWaitForUpload.put(rawJson);
+            } finally {
+                view.showUploadSize(queueOfWaitForUpload.getBufferSize());
             }
         }
 
         @Override
         public void onFailure(Call<MarkResult> call, Throwable t) {
             t.printStackTrace();
-            view.showMakeErrorMsg("网络连接失败:" + t.getMessage());
-//            Call<MarkResult> mark = apiService.mark(enJson);
-//            mark.enqueue(new MyCallback(rawJson, enJson));
+            queueOfWaitForUpload.put(rawJson);
+            view.showUploadSize(queueOfWaitForUpload.getBufferSize());
         }
     }
-
 
 }

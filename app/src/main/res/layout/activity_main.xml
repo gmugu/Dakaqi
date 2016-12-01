@@ -4,55 +4,163 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:weightSum="1"
     tools:context="com.gmugu.dakaqi.view.activity.MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/division"
+        android:background="@color/colorDivision" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_weight="0.26">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/status_of_init_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#19a9d5"
+            android:gravity="left"
+            android:padding="10dp"
+            android:text="Step1:初始化比赛数据!"
+            android:textColor="#ffffff"
+            android:textSize="10pt" />
 
         <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="#7266ba"
-            android:text="蓝牙"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#27c84c"
+            android:gravity="center"
+            android:onClick="onInitGameClick"
+            android:padding="10dp"
+            android:text="初始化比赛数据"
             android:textColor="#ffffff"
-            android:onClick="onBluetoothModeBnClick"
-            android:textSize="9pt" />
+            android:textSize="11pt" />
+    </LinearLayout>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="#7266ba"
-            android:text="NFC"
-            android:onClick="onNFCModeBnClick"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/division"
+        android:background="@color/colorDivision" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#19a9d5"
+            android:gravity="left"
+            android:padding="10dp"
+            android:text="Step2:选择打卡方式!"
             android:textColor="#ffffff"
-            android:textSize="9pt" />
+            android:textSize="10pt" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp">
+
+            <ToggleButton
+                android:id="@+id/bluetooth_mode_tb"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7266ba"
+                android:lines="2"
+                android:textColor="#ffffff"
+                android:textOff="蓝牙模式\n已关闭"
+                android:textOn="蓝牙模式\n已启用"
+                android:textSize="9pt" />
+
+            <TextView
+                android:layout_width="@dimen/division"
+                android:layout_height="match_parent"
+                android:background="#b2df00" />
+
+            <ToggleButton
+                android:id="@+id/nfc_mode_tb"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7266ba"
+                android:checked="false"
+                android:lines="2"
+                android:textColor="#ffffff"
+                android:textOff="NFC模式\n已关闭"
+                android:textOn="NFC模式\n已启用"
+                android:textSize="9pt" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/division"
+        android:background="@color/colorDivision" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#19a9d5"
+            android:gravity="left"
+            android:padding="10dp"
+            android:text="Step3:选择当前打卡点!"
+            android:textColor="#ffffff"
+            android:textSize="10pt" />
+
+        <Spinner
+            android:id="@+id/point_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
 
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
+        android:layout_height="@dimen/division"
+        android:background="@color/colorDivision" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:background="#27c24c"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="选择打卡方式!"
-        android:textColor="#ffffff"
-        android:textSize="11pt" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#19a9d5"
+            android:gravity="left"
+            android:padding="10dp"
+            android:text="Step4:开始比赛!"
+            android:textColor="#ffffff"
+            android:textSize="10pt" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#27c84c"
+            android:gravity="center"
+            android:onClick="onStareClick"
+            android:padding="10dp"
+            android:text="GO"
+            android:textColor="#ffffff"
+            android:textSize="10pt" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,15 +1,13 @@
 package com.gmugu.dakaqi.view.activity;
 
+/**
+ * Created by mugu on 16/11/24.
+ */
 
 import com.gmugu.dakaqi.R;
 import com.gmugu.dakaqi.presenter.ILogicPresenter;
 import com.gmugu.dakaqi.presenter.impl.LogicPresenterImpl;
 import com.gmugu.dakaqi.view.IView;
-
-/**
- * Created by mugu on 16/11/24.
- */
-
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -42,7 +40,7 @@ public class NFCModeActivity extends Activity implements IView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
-        msgTv = (TextView) findViewById(R.id.main_view_info_tv);
+        msgTv = (TextView) findViewById(R.id.main_view_upload_size_tv);
         pointId = getIntent().getIntExtra("pointId", 0);
         // 获取默认的NFC控制器
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -149,8 +147,8 @@ public class NFCModeActivity extends Activity implements IView {
     }
 
     @Override
-    public void showMakeSuccessMsg(String msg) {
-        msgTv.setText(msg);
+    public void showUploadSize(int size) {
+
     }
 
     @Override

@@ -8,12 +8,10 @@ public class MarkResult {
 
     //执行结果,没有错返回0
     private int resultCode;
-    //MarkRequest md5值
-    private String checkSum;
-    //运动员姓名
-    private String runnerName;
     //其他信息
     private String msg;
+    //MarkRequest md5值
+    private String checkSum;
 
     public MarkResult() {
     }
@@ -34,14 +32,6 @@ public class MarkResult {
         this.checkSum = checkSum;
     }
 
-    public String getRunnerName() {
-        return runnerName;
-    }
-
-    public void setRunnerName(String runnerName) {
-        this.runnerName = runnerName;
-    }
-
     public String getMsg() {
         return msg;
     }
@@ -55,7 +45,6 @@ public class MarkResult {
         return "MarkResult{" +
                 "resultCode=" + resultCode +
                 ", checkSum='" + checkSum + '\'' +
-                ", runnerName='" + runnerName + '\'' +
                 ", msg='" + msg + '\'' +
                 '}';
     }

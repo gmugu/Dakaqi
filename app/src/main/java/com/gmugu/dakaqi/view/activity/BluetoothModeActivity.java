@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +15,6 @@ import com.gmugu.dakaqi.view.IView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 /**
  * Created by mugu on 16/11/24.
@@ -73,10 +71,10 @@ public class BluetoothModeActivity extends AppCompatActivity implements IView {
             finish();
         }
 
-        msgTv = (TextView) findViewById(R.id.main_view_info_tv);
+        msgTv = (TextView) findViewById(R.id.main_view_upload_size_tv);
         msgTv.setText(pointId + "");
 
-        btSocket = DeviceListActivity.getBtSocket();
+        btSocket = BluetoothDeviceListActivity.getBtSocket();
         try {
             btReader = new BufferedReader(new InputStreamReader(
                     btSocket.getInputStream())); // 得到蓝牙数据输入流
@@ -111,7 +109,8 @@ public class BluetoothModeActivity extends AppCompatActivity implements IView {
 
 
     @Override
-    public void showCurUserInfo(String runnerName) {
+    public void showCurUserInfo(String cardMAC) {
+
 
     }
 
@@ -121,9 +120,10 @@ public class BluetoothModeActivity extends AppCompatActivity implements IView {
     }
 
     @Override
-    public void showMakeSuccessMsg(String msg) {
+    public void showUploadSize(int size) {
 
     }
+
 
     @Override
     public int getPointId() {
