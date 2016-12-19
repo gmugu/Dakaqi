@@ -43,13 +43,14 @@ public class RunActivity extends AppCompatActivity implements IView {
     private GameInfoResult gameInfo;
     private int pointId;
 
+    private TextView macTv;
     private TextView uploadSizeTv;
     private TextView runnerIdTv;
     private TextView runnerNameTv;
     private TextView runnerGroupTv;
 
 
-    private ILogicPresenter presenter = new LogicPresenterImpl(this);
+    private ILogicPresenter presenter;
 
     //nfc field
     private NfcAdapter nfcAdapter;
@@ -65,7 +66,7 @@ public class RunActivity extends AppCompatActivity implements IView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
-
+        presenter = new LogicPresenterImpl(this);
         Intent intent = getIntent();
         isBluetoothMode = intent.getBooleanExtra(BLUETOOTH_MODE_P, false);
         isNfcMode = intent.getBooleanExtra(NFC_MODE_P, false);
@@ -73,6 +74,7 @@ public class RunActivity extends AppCompatActivity implements IView {
         gameInfo = (GameInfoResult) intent.getSerializableExtra(GAME_INFO_P);
 
 
+        macTv = (TextView) findViewById(R.id.main_view_mac_tv);
         uploadSizeTv = (TextView) findViewById(R.id.main_view_upload_size_tv);
         runnerIdTv = (TextView) findViewById(R.id.main_view_info_id_tv);
         runnerNameTv = (TextView) findViewById(R.id.main_view_info_name_tv);
@@ -130,7 +132,7 @@ public class RunActivity extends AppCompatActivity implements IView {
                     try {
                         getStr = btReader.readLine();
 //                        Log.d(TAG, "run: btRecv:" + getStr);
-                        presenter.onReceive(getStr, pointId + "");
+                        onReceive(getStr, pointId + "");
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -146,21 +148,24 @@ public class RunActivity extends AppCompatActivity implements IView {
     @Override
     protected void onResume() {
         super.onResume();
-//        if ()
-        // 得到是否检测到ACTION_TECH_DISCOVERED触发
-        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
-            // 处理该intent
-            processIntent(getIntent());
-        }
+        if (isNfcMode) {
+            // 得到是否检测到ACTION_TECH_DISCOVERED触发
+            if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
+                // 处理该intent
+                processIntent(getIntent());
+            }
 
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters,
-                techList);
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters,
+                    techList);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        nfcAdapter.disableForegroundDispatch(this);
+        if (isNfcMode) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     // 字符序列转换为16进制字符串
@@ -195,28 +200,45 @@ public class RunActivity extends AppCompatActivity implements IView {
      */
     private void processIntent(Intent intent) {
         // 取出封装在intent中的TAG
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        NfcA nfcA = NfcA.get(tagFromIntent);
-        onNfcRead(nfcA);
+        Log.d(TAG, "processIntent: ");
+        if (isNfcMode) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            NfcA nfcA = NfcA.get(tagFromIntent);
+            onNfcRead(nfcA);
+        }
     }
 
     private void onNfcRead(NfcA nfcA) {
         String id = bytesToHexString(nfcA.getTag().getId());
 
-        Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
-        presenter.onReceive(id, pointId + "");
+        onReceive(id, pointId + "");
     }
+
+    private void onReceive(String mac, String tag) {
+        if (!gameInfo.getPlayerInfos().containsKey(mac)) {
+            macTv.setText(mac);
+            Toast.makeText(this, "不存在用户", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        presenter.onReceive(mac, tag);
+    }
+
 
     @Override
     public void showCurUserInfo(final String runnerName) {
         runOnUiThread(new Runnable() {
             public void run() {
-                Log.d(TAG, "run: " + gameInfo.toString());
-                Map<String, PlayerModel> playerInfos = gameInfo.getPlayerInfos();
-                PlayerModel playerModel = playerInfos.get(runnerName);
-                runnerIdTv.setText(playerModel.getID());
-                runnerNameTv.setText(playerModel.getName());
-                runnerGroupTv.setText(playerModel.getGroup());
+                try {
+                    Log.d(TAG, "run: " + gameInfo.toString());
+                    Map<String, PlayerModel> playerInfos = gameInfo.getPlayerInfos();
+                    PlayerModel playerModel = playerInfos.get(runnerName);
+                    macTv.setText(playerModel.getCardMAC());
+                    runnerIdTv.setText(playerModel.getID());
+                    runnerNameTv.setText(playerModel.getName());
+                    runnerGroupTv.setText(playerModel.getGroup());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -235,7 +257,7 @@ public class RunActivity extends AppCompatActivity implements IView {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                uploadSizeTv.setText((size + 1) + "");
+                uploadSizeTv.setText(size + "");
             }
         });
     }
